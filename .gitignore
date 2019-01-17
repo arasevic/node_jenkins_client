@@ -3,3 +3,8 @@
 
 #ingore npm packages
 node_modules
+
+# emacs
+*~
+.*~
+
