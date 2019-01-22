@@ -38,11 +38,9 @@ node_jenkins_client.parse_build_status = function(msg) {
     console.log(msg);
 }
 
-module.exports = function(rabbit_url, queue_name) {
+module.exports = function(rabbit_url = undefined, queue_name = undefined) {
     rabbit_url = rabbit_url || 'amqp://localhost';
     queue_name = queue_name || 'hello';
-    console.log('rabbit_url is', rabbit_url);
-    console.log('queue_name is', queue_name);
     node_jenkins_client.listen(rabbit_url,
                                queue_name,
                                node_jenkins_client.parse_build_status);

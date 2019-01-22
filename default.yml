@@ -1,0 +1,2 @@
+rabbit_url: 'amqp://localhost'
+queue_name: 'jenkins_status'
