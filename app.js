@@ -4,6 +4,8 @@ var amqp = require('amqplib/callback_api');
 const { Client } = require('pg');
 var jenkins = require('jenkins')({ baseUrl: 'http://user:pass@localhost:8080', crumbIssuer: true });
 
+node_jenkins_client = {}
+
 // Here's what we're gonna do:
 //  1. Listen on a RabbitMQ queue for "job finished" messages from Jenkins.
 //  2. Parse those messages.
@@ -34,4 +36,14 @@ node_jenkins_client.parse_build_status = function(msg) {
     // is, nor what events trigger a message. Thanks, minimal
     // documentation!
     console.log(msg);
+}
+
+module.exports = function(rabbit_url, queue_name) {
+    rabbit_url = rabbit_url || 'amqp://localhost';
+    queue_name = queue_name || 'hello';
+    console.log('rabbit_url is', rabbit_url);
+    console.log('queue_name is', queue_name);
+    node_jenkins_client.listen(rabbit_url,
+                               queue_name,
+                               node_jenkins_client.parse_build_status);
 }
