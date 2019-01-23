@@ -38,6 +38,7 @@ node_jenkins_client.listen = function(rabbit_url, queue_name, dispatcher) {
 // is.
 node_jenkins_client.jenkins_parse_build = function(err,data) {
     if (err) throw err;
+    console.log(data);
     return data; // XXX
 }
 
@@ -79,6 +80,9 @@ node_jenkins_client.parse_build_status = function(msg) {
     // }
     //
     // No idea what these parameters might be, though.
+
+    var build_info = node_jenkins_client.jenkins_get_job(msg.project, msg.number);
+    console.log(build_info);
 }
 
 module.exports = function(jenkins_url = undefined, rabbit_url = undefined, queue_name = undefined) {
