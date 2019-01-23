@@ -4,14 +4,16 @@ const yaml = require('yaml');
 const args = process.argv.slice(2);
 const fs = require('fs');
 
-url = undefined;
+jurl = undefined;
+rurl = undefined;
 queue = undefined;
 
 if(args.length > 0) {
     const file = fs.readFileSync(args[0], 'utf8');
     const conf = yaml.parse(file);
-    url = conf.rabbit_url;
+    jurl = conf.jenkins_url;
+    rurl = conf.rabbit_url;
     queue = conf.queue_name;
 }
 
-app(rabbit_url=url, queue_name=queue);
+app(jenkins_url=jurl, rabbit_url=rurl, queue_name=queue);
