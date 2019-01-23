@@ -30,6 +30,25 @@ node_jenkins_client.listen = function(rabbit_url, queue_name, dispatcher) {
                 );
 }
 
+// This parses the response for a build info request.
+//
+// My understanding is that, despite this not being in the
+// documentation, there's an "artifacts" field in the JSON response
+// with an array of artifact info. No idea yet what that info's format
+// is.
+node_jenkins_client.jenkins_parse_build = function(err,data) {
+    if (err) throw err;
+    return data; // XXX
+}
+
+// This gets the information about a Jenkins job, parses it, and
+// returns the parsed data.
+node_jenkins_client.jenkins_get_job = function(job_name,job_id) {
+    return jenkins.build.get(job_name,
+                             job_id,
+                             node_jenkins_client.jenkins_parse_build);
+}
+
 // Handle the message from Jenkins that was published to RabbitMQ
 node_jenkins_client.parse_build_status = function(msg) {
     // At the moment, we don't actually know what the format of this
