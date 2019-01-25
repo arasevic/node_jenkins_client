@@ -55,6 +55,7 @@ node_jenkins_client.parse_build_status = function(msg) {
     // At the moment, we don't actually know what the format of this
     // is, nor what events trigger a message. Thanks, minimal
     // documentation!
+    console.log('in parse_build_status');
     console.log(msg);
     // I *think* we'll be expecting:
     // {
