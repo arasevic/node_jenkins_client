@@ -1,2 +1,3 @@
 rabbit_url: 'amqp://localhost'
 queue_name: 'jenkins_status'
+jenkins_url: 'http://mmarsh:1191bcce87fe3749002c72d3e2daa4c5b0@localhost:8080'

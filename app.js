@@ -95,7 +95,7 @@ module.exports = function(jenkins_url = undefined, rabbit_url = undefined, queue
         if (err) {
             console.log('error',err);
         } else {
-            console.log('info',data);
+            console.log('connected to Jenkins');
             node_jenkins_client.listen(rabbit_url,
                                        queue_name,
                                        node_jenkins_client.parse_build_status);
