@@ -89,8 +89,16 @@ module.exports = function(jenkins_url = undefined, rabbit_url = undefined, queue
     jenkins_url = jenkins_url || 'http://user:pass@localhost:8080';
     rabbit_url = rabbit_url || 'amqp://localhost';
     queue_name = queue_name || 'hello';
+    console.log(jenkins_url);
     jenkins = require('jenkins')({ baseUrl: jenkins_url, crumbIssuer: true });
-    node_jenkins_client.listen(rabbit_url,
-                               queue_name,
-                               node_jenkins_client.parse_build_status);
+    jenkins.info(function(err,data) {
+        if (err) {
+            console.log('error',err);
+        } else {
+            console.log('info',data);
+            node_jenkins_client.listen(rabbit_url,
+                                       queue_name,
+                                       node_jenkins_client.parse_build_status);
+        }
+    });
 }
