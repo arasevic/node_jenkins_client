@@ -94,6 +94,15 @@ node_jenkins_client.jenkins_parse_build = function(err,data) {
     };
 
 
+    // XXX -- for now, grab all the artifacts and log them
+    for (var i in data.artifacts) {
+        var artifact = data.artifacts[i];
+        var aurl = data.url + "artifact/" + artifact.relativePath;
+        console.log(aurl);
+        jenkins._get(aurl, function(err,foo) {
+            console.log(foo.body);
+        });
+    }
     console.log('returning from jenkins_parse_build');
     return data; // XXX
 }
