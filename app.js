@@ -31,20 +31,50 @@ node_jenkins_client.listen = function(rabbit_url, queue_name, dispatcher) {
 }
 
 // This parses the response for a build info request.
-//
-// My understanding is that, despite this not being in the
-// documentation, there's an "artifacts" field in the JSON response
-// with an array of artifact info. No idea yet what that info's format
-// is.
 node_jenkins_client.jenkins_parse_build = function(err,data) {
+    console.log('in jenkins_parse_build');
     if (err) throw err;
     console.log(data);
+    // The returned data has an 'artifacts' field, which is an array.
+    // Here's a complete sample from a failed (null) build:
+    const example = {
+        _class: 'hudson.model.FreeStyleBuild',
+        actions:
+        [ { _class: 'hudson.model.CauseAction', causes: [Array] },
+          {},
+          {} ],
+        artifacts: [],
+        building: false,
+        description: null,
+        displayName: '#10',
+        duration: 81,
+        estimatedDuration: 335,
+        executor: null,
+        fullDisplayName: 'foo #10',
+        id: '10',
+        keepLog: false,
+        number: 10,
+        queueId: 10,
+        result: 'FAILURE',
+        timestamp: 1548778636982,
+        url: 'http://localhost:8080/job/foo/10/',
+        builtOn: '',
+        changeSet:
+        { _class: 'hudson.scm.EmptyChangeLogSet', items: [], kind: null },
+        culprits: []
+    };
+
+    console.log('returning from jenkins_parse_build');
     return data; // XXX
 }
 
 // This gets the information about a Jenkins job, parses it, and
 // returns the parsed data.
 node_jenkins_client.jenkins_get_job = function(job_name,job_id) {
+    console.log('in jenkins_get_job');
+    console.log(job_name);
+    console.log(job_id);
+    console.log('calling jenkins.build.get()');
     return jenkins.build.get(job_name,
                              job_id,
                              node_jenkins_client.jenkins_parse_build);
@@ -52,41 +82,34 @@ node_jenkins_client.jenkins_get_job = function(job_name,job_id) {
 
 // Handle the message from Jenkins that was published to RabbitMQ
 node_jenkins_client.parse_build_status = function(msg) {
-    // At the moment, we don't actually know what the format of this
-    // is, nor what events trigger a message. Thanks, minimal
-    // documentation!
     console.log('in parse_build_status');
     console.log(msg);
-    // I *think* we'll be expecting:
-    // {
-    //   "project": "<name>",
-    //   "number": "<build>",
-    //   "status": "<status>"
-    // }
-    //
-    // something else apparently gives us:
-    // {
-    //   "project": "<name>",
-    //   "token": "<token>",
-    //   "parameter": [
-    //     {
-    //       "name": "<param1>",
-    //       "value": "<val1>"
-    //     },
-    //     {
-    //       "name": "<param2>",
-    //       "value": "<val2>"
-    //     }
-    //   ]
-    // }
-    //
-    // No idea what these parameters might be, though.
 
-    var build_info = node_jenkins_client.jenkins_get_job(msg.project, msg.number);
+    const content = JSON.parse(msg.content);
+    console.log(content);
+
+    // This is probably not the right way to do this. Open to suggestions!
+    if ( content.project == undefined ) {
+        console.log('message does not have a project field');
+        return;
+    }
+    if ( content.number == undefined ) {
+        console.log('message does not have a number field');
+        return;
+    }
+    if ( content.status == undefined ) {
+        console.log('message does not have a status field');
+        return;
+    }
+
+    var build_info = node_jenkins_client.jenkins_get_job(content.project,
+                                                         content.number);
     console.log(build_info);
 }
 
-module.exports = function(jenkins_url = undefined, rabbit_url = undefined, queue_name = undefined) {
+module.exports = function(jenkins_url = undefined,
+                          rabbit_url = undefined,
+                          queue_name = undefined) {
     jenkins_url = jenkins_url || 'http://user:pass@localhost:8080';
     rabbit_url = rabbit_url || 'amqp://localhost';
     queue_name = queue_name || 'hello';
