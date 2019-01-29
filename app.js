@@ -37,7 +37,7 @@ node_jenkins_client.jenkins_parse_build = function(err,data) {
     console.log(data);
     // The returned data has an 'artifacts' field, which is an array.
     // Here's a complete sample from a failed (null) build:
-    const example = {
+    const example_fail = {
         _class: 'hudson.model.FreeStyleBuild',
         actions:
         [ { _class: 'hudson.model.CauseAction', causes: [Array] },
@@ -63,6 +63,36 @@ node_jenkins_client.jenkins_parse_build = function(err,data) {
         { _class: 'hudson.scm.EmptyChangeLogSet', items: [], kind: null },
         culprits: []
     };
+    // Here's a complete sample from a successful build with an artifact:
+    const example_succeed = {
+        _class: 'hudson.model.FreeStyleBuild',
+        actions:
+        [ { _class: 'hudson.model.CauseAction', causes: [Array] },
+          {},
+          {} ],
+        artifacts: [
+            { displayPath: 'bar', fileName: 'bar', relativePath: 'bar' }
+        ],
+        building: false,
+        description: null,
+        displayName: '#17',
+        duration: 126,
+        estimatedDuration: 165,
+        executor: null,
+        fullDisplayName: 'foo #17',
+        id: '17',
+        keepLog: false,
+        number: 17,
+        queueId: 17,
+        result: 'SUCCESS',
+        timestamp: 1548786655538,
+        url: 'http://localhost:8080/job/foo/17/',
+        builtOn: '',
+        changeSet:
+        { _class: 'hudson.scm.EmptyChangeLogSet', items: [], kind: null },
+        culprits: []
+    };
+
 
     console.log('returning from jenkins_parse_build');
     return data; // XXX
